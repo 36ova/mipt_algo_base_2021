@@ -1,0 +1,6 @@
+[submodule "public_tests"]
+	path = public_tests
+	url = ../public_tests
+[submodule "secret_tests"]
+	path = secret_tests
+	url = ../secret_tests

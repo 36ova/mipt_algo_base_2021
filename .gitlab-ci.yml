@@ -1,0 +1,29 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+image: kunitoki/clang-10
+
+stages:
+        - test
+before_script:
+        - apt-get update -y
+        - apt-get install -y gcc
+        - apt-get install -y clang-format
+        - apt-get install -y clang-tidy
+        - apt-get install -y libgtest-dev
+        - apt-get install -y valgrind
+        - mkdir build_gtest
+        - cd build_gtest
+        - cmake /usr/src/gtest
+        - make
+        - cp libgtest* /usr/lib
+        - cd ..
+        - git submodule update --remote
+
+test:
+        stage: test
+        script:
+                - cd public_tests
+                - ./test_solution.sh $CI_COMMIT_BRANCH
+                - cd ../secret_tests
+                - ./test_solution.sh $CI_COMMIT_BRANCH
