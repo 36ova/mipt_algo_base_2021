@@ -25,5 +25,9 @@ test:
         script:
                 - cd public_tests
                 - ./test_solution.sh $CI_COMMIT_BRANCH
-                - cd ../secret_tests
+                - cd ..
+                - git clone  https://$TESTER:$TESTING_TOKEN@gitlab.com/VladimirVolodya/secret_tests.git
+
+                - cd secret_tests
                 - ./test_solution.sh $CI_COMMIT_BRANCH
+
