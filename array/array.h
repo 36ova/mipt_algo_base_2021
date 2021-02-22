@@ -123,7 +123,7 @@ bool Array<T, N>::operator!=(Array<T, N> &other) const {
 
 template <class T, size_t N>
 void swap(Array<T, N> &first, Array<T, N> &second) {
-  first.Swap(second);
+    first.Swap(second);
 }
 
 #endif
