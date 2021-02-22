@@ -33,18 +33,18 @@ public:
 };
 
 template <class T, size_t N> T Array<T, N>::operator[](size_t i) const {
-  return array[i];
+    return array[i];
 }
 
 template <class T, size_t N> T &Array<T, N>::operator[](size_t i) {
-  return array[i];
+    return array[i];
 }
 
 template <class T, size_t N> T &Array<T, N>::At(size_t i) {
-  if (i >= N) {
-    throw ArrayOutOfRange{};
-  }
-  return array[i];
+    if (i >= N) {
+        throw ArrayOutOfRange{};
+    }
+    return array[i];
 }
 
 template <class T, size_t N> T Array<T, N>::Front() const { return array[0]; }
@@ -52,13 +52,13 @@ template <class T, size_t N> T Array<T, N>::Front() const { return array[0]; }
 template <class T, size_t N> T &Array<T, N>::Front() { return array[0]; }
 
 template <class T, size_t N> T Array<T, N>::Back() const {
-  return array[N - 1];
+    return array[N - 1];
 }
 
 template <class T, size_t N> T &Array<T, N>::Back() { return array[N - 1]; }
 
 template <class T, size_t N> const T *Array<T, N>::Data() const {
-  return &(array[0]);
+    return &(array[0]);
 }
 
 template <class T, size_t N> size_t Array<T, N>::Size() const { return N; }
@@ -66,59 +66,59 @@ template <class T, size_t N> size_t Array<T, N>::Size() const { return N; }
 template <class T, size_t N> bool Array<T, N>::Empty() const { return !(N); }
 
 template <class T, size_t N> void Array<T, N>::Fill(const T &value) {
-  for (size_t i = 0; i < N; ++i) {
-    array[i] = value;
-  }
+    for (size_t i = 0; i < N; ++i) {
+        array[i] = value;
+    }
 }
 
 template <class T, size_t N> void Array<T, N>::Swap(Array<T, N> &other) {
-  for (size_t i = 0; i < N; ++i) {
-    std::swap(array[i], other[i]);
-  }
+    for (size_t i = 0; i < N; ++i) {
+        std::swap(array[i], other[i]);
+    }
 }
 
 template <class T, size_t N>
 bool Array<T, N>::operator<(Array<T, N> &other) const {
-  for (size_t i = 0; i < N; ++i) {
-    if (array[i] >= other[i]) {
-      return false;
+    for (size_t i = 0; i < N; ++i) {
+        if (array[i] >= other[i]) {
+            return false;
+        }
     }
-  }
-  return true;
+    return true;
 }
 
 template <class T, size_t N>
 bool Array<T, N>::operator>(Array<T, N> &other) const {
-  for (size_t i = 0; i < N; ++i) {
-    if (array[i] <= other[i]) {
-      return false;
+    for (size_t i = 0; i < N; ++i) {
+        if (array[i] <= other[i]) {
+            return false;
+        }
     }
-  }
-  return true;
+    return true;
 }
 
 template <class T, size_t N>
 bool Array<T, N>::operator==(Array<T, N> &other) const {
-  for (size_t i = 0; i < N; ++i) {
-    if (array[i] != other[i]) {
-      return false;
+    for (size_t i = 0; i < N; ++i) {
+        if (array[i] != other[i]) {
+            return false;
+        }
     }
-  }
-  return true;
+    return true;
 }
 
 template <class T, size_t N>
 bool Array<T, N>::operator<=(Array<T, N> &other) const {
-  return (!(this > other));
+    return (!(this > other));
 }
 
 template <class T, size_t N>
 bool Array<T, N>::operator>=(Array<T, N> &other) const {
-  return (!(this < other));
+    return (!(this < other));
 }
 template <class T, size_t N>
 bool Array<T, N>::operator!=(Array<T, N> &other) const {
-  return (!(this == other));
+    return (!(this == other));
 }
 
 template <class T, size_t N>
