@@ -71,7 +71,7 @@ template <class T, size_t N> void Array<T, N>::Fill(const T &value) {
     }
 }
 
-template <class T, size_t N> void Array<T, N>::Swap(Array<T, N> &other) { // NOLINT
+template <class T, size_t N> void Array<T, N>::Swap(Array<T, N> &other) {  // NOLINT
     for (size_t i = 0; i < N; ++i) {
         std::swap(array[i], other[i]);
     }
@@ -121,8 +121,8 @@ bool Array<T, N>::operator!=(Array<T, N> &other) const {
     return (!(this == other));
 }
 
-template <class T, size_t N> 
-void swap(Array<T, N> &first, Array<T, N> &second) { // NOLINT
+template <class T, size_t N>
+void swap(Array<T, N> &first, Array<T, N> &second) {  // NOLINT
     first.Swap(second);
 }
 
