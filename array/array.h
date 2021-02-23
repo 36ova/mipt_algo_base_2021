@@ -103,7 +103,9 @@ void Array<T, N>::Fill(const T &value) {
 template <class T, size_t N>
 void Array<T, N>::Swap(Array<T, N> &other) {
     for (size_t i = 0; i < N; ++i) {
-        std::swap(array[i], other[i]);
+        T temp = other[i];
+        other[i] = array[i];
+        array[i] = temp;
     }
 }
 
