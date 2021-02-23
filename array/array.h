@@ -65,7 +65,8 @@ template <class T, size_t N> size_t Array<T, N>::Size() const { return N; }
 
 template <class T, size_t N> bool Array<T, N>::Empty() const { return !(N); }
 
-template <class T, size_t N> void Array<T, N>::Fill(const T &value) {
+template <class T, size_t N> 
+void Array<T, N>::Fill(const T &value) {
     for (size_t i = 0; i < N; ++i) {
         array[i] = value;
     }
