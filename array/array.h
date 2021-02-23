@@ -14,14 +14,15 @@ template <class T, size_t N>
 struct Array {
 public:
     T array[N];
-    T operator[](size_t i) const;
-    T &operator[](size_t i);
-    T &At(size_t i);
+    T operator[](size_t idx) const;
+    T &operator[](size_t idx);
+    T &At(size_t idx);
     T Front() const;
     T &Front();
     T Back() const;
     T &Back();
     const T *Data() const;
+    const T *Data();
     size_t Size() const;
     bool Empty() const;
     void Fill(const T &value);
@@ -35,21 +36,21 @@ public:
 };
 
 template <class T, size_t N>
-T Array<T, N>::operator[](size_t i) const {
-    return array[i];
+T Array<T, N>::operator[](size_t idx) const {
+    return array[idx];
 }
 
 template <class T, size_t N>
-T &Array<T, N>::operator[](size_t i) {
-    return array[i];
+T &Array<T, N>::operator[](size_t idx) {
+    return array[idx];
 }
 
 template <class T, size_t N>
-T &Array<T, N>::At(size_t i) {
-    if (i >= N) {
+T &Array<T, N>::At(size_t idx) {
+    if (idx >= N) {
         throw ArrayOutOfRange{};
     }
-    return array[i];
+    return array[idx];
 }
 
 template <class T, size_t N>
@@ -74,6 +75,11 @@ T &Array<T, N>::Back() {
 
 template <class T, size_t N>
 const T *Array<T, N>::Data() const {
+    return &(array[0]);
+}
+
+template <class T, size_t N>
+const T *Array<T, N>::Data() {
     return &(array[0]);
 }
 
@@ -162,6 +168,7 @@ bool Array<T, N>::operator>=(Array<T, N> &other) const {
     }
     return true;
 }
+
 template <class T, size_t N>
 bool Array<T, N>::operator!=(Array<T, N> &other) const {
     for (size_t i = 0; i < N; ++i) {
