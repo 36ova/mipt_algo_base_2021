@@ -16,6 +16,7 @@ public:
     T array[N];
     T operator[](size_t idx) const;
     T &operator[](size_t idx);
+    T At(size_t idx) const;
     T &At(size_t idx);
     T Front() const;
     T &Front();
@@ -42,6 +43,14 @@ T Array<T, N>::operator[](size_t idx) const {
 
 template <class T, size_t N>
 T &Array<T, N>::operator[](size_t idx) {
+    return array[idx];
+}
+
+template <class T, size_t N>
+T Array<T, N>::At(size_t idx) const {
+    if (idx >= N) {
+        throw ArrayOutOfRange{};
+    }
     return array[idx];
 }
 
@@ -158,6 +167,11 @@ bool Array<T, N>::operator>=(const Array<T, N> &other) const {
 template <class T, size_t N>
 bool Array<T, N>::operator!=(const Array<T, N> &other) const {
     return !(*this == other);
+}
+
+template <class T, size_t N>
+void swap(Array<T, N> &first, Array<T, N> &second) {  // NOLINT
+    first.Swap(second);
 }
 
 #endif
