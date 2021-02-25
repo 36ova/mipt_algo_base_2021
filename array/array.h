@@ -14,7 +14,7 @@ template <class T, size_t N>
 struct Array {
 public:
     T array[N];
-    T operator[](size_t idx) const;
+    const T &operator[](size_t idx) const;
     T &operator[](size_t idx);
     T At(size_t idx) const;
     T &At(size_t idx);
@@ -37,7 +37,7 @@ public:
 };
 
 template <class T, size_t N>
-T Array<T, N>::operator[](size_t idx) const {
+const T &Array<T, N>::operator[](size_t idx) const {
     return array[idx];
 }
 
