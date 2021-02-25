@@ -27,12 +27,12 @@ public:
     bool Empty() const;
     void Fill(const T &value);
     void Swap(Array<T, N> &other);
-    bool operator<(Array<T, N> &other) const;
-    bool operator>(Array<T, N> &other) const;
-    bool operator==(Array<T, N> &other) const;
-    bool operator<=(Array<T, N> &other) const;
-    bool operator>=(Array<T, N> &other) const;
-    bool operator!=(Array<T, N> &other) const;
+    bool operator<(const Array<T, N> &other) const;
+    bool operator>(const Array<T, N> &other) const;
+    bool operator==(const Array<T, N> &other) const;
+    bool operator<=(const Array<T, N> &other) const;
+    bool operator>=(const Array<T, N> &other) const;
+    bool operator!=(const Array<T, N> &other) const;
 };
 
 template <class T, size_t N>
@@ -110,7 +110,7 @@ void Array<T, N>::Swap(Array<T, N> &other) {
 }
 
 template <class T, size_t N>
-bool Array<T, N>::operator<(Array<T, N> &other) const {
+bool Array<T, N>::operator<(const Array<T, N> &other) const {
     for (size_t i = 0; i < N; ++i) {
         if (array[i] < other[i]) {
             return true;
@@ -123,7 +123,7 @@ bool Array<T, N>::operator<(Array<T, N> &other) const {
 }
 
 template <class T, size_t N>
-bool Array<T, N>::operator>(Array<T, N> &other) const {
+bool Array<T, N>::operator>(const Array<T, N> &other) const {
     for (size_t i = 0; i < N; ++i) {
         if (array[i] > other[i]) {
             return true;
@@ -136,7 +136,7 @@ bool Array<T, N>::operator>(Array<T, N> &other) const {
 }
 
 template <class T, size_t N>
-bool Array<T, N>::operator==(Array<T, N> &other) const {
+bool Array<T, N>::operator==(const Array<T, N> &other) const {
     for (size_t i = 0; i < N; ++i) {
         if (array[i] != other[i]) {
             return false;
@@ -146,44 +146,18 @@ bool Array<T, N>::operator==(Array<T, N> &other) const {
 }
 
 template <class T, size_t N>
-bool Array<T, N>::operator<=(Array<T, N> &other) const {
-    for (size_t i = 0; i < N; ++i) {
-        if (array[i] < other[i]) {
-            return true;
-        }
-        if (array[i] > other[i]) {
-            return false;
-        }
-    }
-    return true;
+bool Array<T, N>::operator<=(const Array<T, N> &other) const {
+    return !(*this > other);
 }
 
 template <class T, size_t N>
-bool Array<T, N>::operator>=(Array<T, N> &other) const {
-    for (size_t i = 0; i < N; ++i) {
-        if (array[i] > other[i]) {
-            return true;
-        }
-        if (array[i] < other[i]) {
-            return false;
-        }
-    }
-    return true;
+bool Array<T, N>::operator>=(const Array<T, N> &other) const {
+    return !(*this < other);
 }
 
 template <class T, size_t N>
-bool Array<T, N>::operator!=(Array<T, N> &other) const {
-    for (size_t i = 0; i < N; ++i) {
-        if (array[i] != other[i]) {
-            return true;
-        }
-    }
-    return false;
-}
-
-template <class T, size_t N>
-void swap(Array<T, N> &first, Array<T, N> &second) {  // NOLINT
-    first.Swap(second);
+bool Array<T, N>::operator!=(const Array<T, N> &other) const {
+    return !(*this == other);
 }
 
 #endif
