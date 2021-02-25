@@ -22,7 +22,7 @@ public:
     T Back() const;
     T &Back();
     const T *Data() const;
-    const T *Data();
+    T *Data();
     size_t Size() const;
     bool Empty() const;
     void Fill(const T &value);
@@ -79,7 +79,7 @@ const T *Array<T, N>::Data() const {
 }
 
 template <class T, size_t N>
-const T *Array<T, N>::Data() {
+T *Array<T, N>::Data() {
     return &(array[0]);
 }
 
