@@ -1,6 +1,7 @@
 #ifndef RATIONAL_RATIONAL_H
 #define RATIONAL_RATIONAL_H
 
+#include <util/constants.h>
 #include <cstdlib>
 #include <istream>
 #include <ostream>
@@ -52,4 +53,4 @@ Rational operator-(const Rational& x, const Rational& y);
 Rational operator*(const Rational& x, const Rational& y);
 Rational operator/(const Rational& x, const Rational& y);
 
-#endif
+#endif  // RATIONAL_RATIONAL_H

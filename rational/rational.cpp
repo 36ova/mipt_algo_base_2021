@@ -1,6 +1,5 @@
 #include "rational.h"
 #include <iostream>
-#include <util/constants.h>
 
 Rational::Rational(int x, int y) {
     p = x;
