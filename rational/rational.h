@@ -34,12 +34,6 @@ public:
     Rational& operator/=(const Rational& other);
     Rational operator+() const;
     Rational operator-() const;
-    bool operator<(Rational& other) const;
-    bool operator>(Rational& other) const;
-    bool operator<=(Rational& other) const;
-    bool operator>=(Rational& other) const;
-    bool operator==(Rational& other) const;
-    bool operator!=(Rational& other) const;
     Rational& operator++();
     Rational& operator--();
     Rational operator++(int);
@@ -52,5 +46,11 @@ Rational operator+(const Rational& x, const Rational& y);
 Rational operator-(const Rational& x, const Rational& y);
 Rational operator*(const Rational& x, const Rational& y);
 Rational operator/(const Rational& x, const Rational& y);
+bool operator<(Rational& x, Rational& y);
+bool operator>(Rational& x, Rational& y);
+bool operator<=(Rational& x, Rational& y);
+bool operator>=(Rational& x, Rational& y);
+bool operator==(Rational& x, Rational& y);
+bool operator!=(Rational& x, Rational& y);
 
 #endif  // RATIONAL_RATIONAL_H

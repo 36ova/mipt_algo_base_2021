@@ -89,30 +89,6 @@ Rational Rational::operator-() const {
     return Rational(-p, q);
 }
 
-bool Rational::operator<(Rational& other) const {
-    return p * other.q < other.p * q;
-}
-
-bool Rational::operator>(Rational& other) const {
-    return p * other.q > other.p * q;
-}
-
-bool Rational::operator<=(Rational& other) const {
-    return !(*this > other);
-}
-
-bool Rational::operator>=(Rational& other) const {
-    return !(*this < other);
-}
-
-bool Rational::operator==(Rational& other) const {
-    return p * other.q == other.p * q;
-}
-
-bool Rational::operator!=(Rational& other) const {
-    return !(*this == other);
-}
-
 Rational& Rational::operator++() {
     p += q;
     Reduce();
@@ -194,4 +170,30 @@ Rational operator/(const Rational& x, const Rational& y) {
     res.SetDenominator(x.GetDenominator() * y.GetNumerator());
     res.Reduce();
     return res;
+}
+
+bool operator<(Rational& x, Rational& y) {
+    int fold = x.GetNumerator() * y.GetDenominator();
+    return fold < y.GetNumerator() * x.GetDenominator();
+}
+
+bool operator>(Rational& x, Rational& y) {
+    return y < x;
+}
+
+bool operator<=(Rational& x, Rational& y) {
+    return !(x > y);
+}
+
+bool operator>=(Rational& x, Rational& y) {
+    return !(y < x);
+}
+
+bool operator==(Rational& x, Rational& y) {
+    int fold = x.GetNumerator() * y.GetDenominator();
+    return fold == y.GetNumerator() * x.GetDenominator();
+}
+
+bool operator!=(Rational& x, Rational& y) {
+    return !(x == y);
 }
