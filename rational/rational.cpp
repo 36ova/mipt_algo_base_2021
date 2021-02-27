@@ -1,7 +1,7 @@
 #include "rational.h"
 #include <iostream>
 
-Rational::Rational(int x, int y) {
+Rational::Rational(const int x, const int y) {
     p = x;
     q = y;
     Reduce();
@@ -172,28 +172,28 @@ Rational operator/(const Rational& x, const Rational& y) {
     return res;
 }
 
-bool operator<(Rational& x, Rational& y) {
+bool operator<(const Rational& x, const Rational& y) {
     int fold = x.GetNumerator() * y.GetDenominator();
     return fold < y.GetNumerator() * x.GetDenominator();
 }
 
-bool operator>(Rational& x, Rational& y) {
+bool operator>(const Rational& x, const Rational& y) {
     return y < x;
 }
 
-bool operator<=(Rational& x, Rational& y) {
+bool operator<=(const Rational& x, const Rational& y) {
     return !(x > y);
 }
 
-bool operator>=(Rational& x, Rational& y) {
+bool operator>=(const Rational& x, const Rational& y) {
     return !(y < x);
 }
 
-bool operator==(Rational& x, Rational& y) {
+bool operator==(const Rational& x, const Rational& y) {
     int fold = x.GetNumerator() * y.GetDenominator();
     return fold == y.GetNumerator() * x.GetDenominator();
 }
 
-bool operator!=(Rational& x, Rational& y) {
+bool operator!=(const Rational& x, const Rational& y) {
     return !(x == y);
 }

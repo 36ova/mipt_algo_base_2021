@@ -1,7 +1,7 @@
 #ifndef RATIONAL_RATIONAL_H
 #define RATIONAL_RATIONAL_H
 
-#include <util/constants.h>
+//#include <util/constants.h>
 #include <cstdlib>
 #include <istream>
 #include <ostream>
@@ -21,8 +21,8 @@ private:
 
 public:
     Rational() : p(0), q(1){};
-    Rational(int x) : p(x), q(1){};  // NOLINT
-    Rational(int x, int y);
+    Rational(const int x) : p(x), q(1){};  // NOLINT
+    Rational(const int x, const int y);
     void Reduce();
     int GetNumerator() const;
     int GetDenominator() const;
@@ -46,11 +46,11 @@ Rational operator+(const Rational& x, const Rational& y);
 Rational operator-(const Rational& x, const Rational& y);
 Rational operator*(const Rational& x, const Rational& y);
 Rational operator/(const Rational& x, const Rational& y);
-bool operator<(Rational& x, Rational& y);
-bool operator>(Rational& x, Rational& y);
-bool operator<=(Rational& x, Rational& y);
-bool operator>=(Rational& x, Rational& y);
-bool operator==(Rational& x, Rational& y);
-bool operator!=(Rational& x, Rational& y);
+bool operator<(const Rational& x, const Rational& y);
+bool operator>(const Rational& x, const Rational& y);
+bool operator<=(const Rational& x, const Rational& y);
+bool operator>=(const Rational& x, const Rational& y);
+bool operator==(const Rational& x, const Rational& y);
+bool operator!=(const Rational& x, const Rational& y);
 
 #endif  // RATIONAL_RATIONAL_H
