@@ -75,6 +75,10 @@ Rational& Rational::operator*=(const Rational& other) {
 }
 
 Rational& Rational::operator/=(const Rational& other) {
+    if (other == *this) {
+        p = q = 1;
+        return *this;
+    }
     p *= other.q;
     q *= other.p;
     Reduce();
@@ -186,7 +190,7 @@ bool operator<=(const Rational& x, const Rational& y) {
 }
 
 bool operator>=(const Rational& x, const Rational& y) {
-    return !(y < x);
+    return !(x < y);
 }
 
 bool operator==(const Rational& x, const Rational& y) {
