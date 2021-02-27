@@ -51,19 +51,25 @@ void Rational::SetDenominator(int y) {
 }
 
 Rational& Rational::operator+=(const Rational& other) {
-    int a = GetDenominator();
-    int b = other.GetDenominator();
-    int gcd = get_gcd(a, b);
-    int num = GetNumerator() * (b / gcd) + other.GetNumerator() * (a / gcd);
-    SetNumerator(num);
-    SetDenominator(a * b / gcd);
+    if (other == *this) {
+        p *= 2;
+    } else {
+        int gcd = get_gcd(q, other.q);
+        p = p * (other.q / gcd) + other.p * (q / gcd);
+        q = q * other.q / gcd;
+    }
     Reduce();
     return *this;
 }
 
 Rational& Rational::operator-=(const Rational& other) {
-    *this += (-other);
-    Reduce();
+    if (other == *this) {
+        p = 0;
+        q = 1;
+    } else {
+        *this += (-other);
+        Reduce();
+    }
     return *this;
 }
 
@@ -77,11 +83,11 @@ Rational& Rational::operator*=(const Rational& other) {
 Rational& Rational::operator/=(const Rational& other) {
     if (other == *this) {
         p = q = 1;
-        return *this;
+    } else {
+        p *= other.q;
+        q *= other.p;
+        Reduce();
     }
-    p *= other.q;
-    q *= other.p;
-    Reduce();
     return *this;
 }
 
