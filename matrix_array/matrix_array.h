@@ -164,7 +164,7 @@ MatrixArray<T, N, M>& MatrixArray<T, N, M>::operator*=(const MatrixArray<T, M, M
     }
     for (size_t row = 0; row < N; ++row) {
         for (size_t col = 0; col < M; ++col) {
-            T sum = kZero;
+            T sum = kZero<T>;
             for (size_t ind = 0; ind < M; ++ind) {
                 sum += copy(row, ind) * other(ind, col);
             }
@@ -215,7 +215,7 @@ MatrixArray<T, N, K> operator*(const MatrixArray<T, N, M>& x, const MatrixArray<
     MatrixArray<T, N, K> result;
     for (size_t row = 0; row < N; ++row) {
         for (size_t col = 0; col < K; ++col) {
-            T sum = kZero;
+            T sum = kZero<T>;
             for (size_t ind = 0; ind < M; ++ind) {
                 sum += x(row, ind) * y(ind, col);
             }
