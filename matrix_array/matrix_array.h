@@ -23,7 +23,8 @@ struct MatrixArray {
 private:
 public:
     T matrix[N][M];
-    MatrixArray();
+
+    // MatrixArray();
     // MatrixArray(std::initializer_list<T> l);
     // MatrixArray(std::initializer_list<std::initializer_list<T>> l);
     size_t RowsNumber() const;
@@ -41,15 +42,15 @@ public:
     MatrixArray<T, N, M>& operator/=(const T num);
 };
 
-template <class T, size_t N, size_t M>
-MatrixArray<T, N, M>::MatrixArray() {
-    for (size_t i = 0; i < N; ++i) {
-        for (size_t j = 0; j < M; ++j) {
-            matrix[i][j] = 0;
-            // matrix[i][j] = kZero<T>;
-        }
-    }
-}
+// template <class T, size_t N, size_t M>
+// MatrixArray<T, N, M>::MatrixArray() {
+//     for (size_t i = 0; i < N; ++i) {
+//         for (size_t j = 0; j < M; ++j) {
+//             matrix[i][j] = 0;
+//             // matrix[i][j] = kZero<T>;
+//         }
+//     }
+// }
 
 // template <class T, size_t N, size_t M>
 // MatrixArray<T, N, M>::MatrixArray(std::initializer_list<T> l) {

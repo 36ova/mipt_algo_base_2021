@@ -1,7 +1,6 @@
 #ifndef RATIONAL_RATIONAL_H
 #define RATIONAL_RATIONAL_H
 
-//#include <util/constants.h>
 #include <cstdlib>
 #include <istream>
 #include <ostream>
@@ -26,8 +25,8 @@ public:
     void Reduce();
     int GetNumerator() const;
     int GetDenominator() const;
-    void SetNumerator(int x);
-    void SetDenominator(int y);
+    void SetNumerator(const int x);
+    void SetDenominator(const int y);
     Rational& operator+=(const Rational& other);
     Rational& operator-=(const Rational& other);
     Rational& operator*=(const Rational& other);
