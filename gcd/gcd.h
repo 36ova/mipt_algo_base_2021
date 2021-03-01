@@ -3,15 +3,15 @@
 
 template <class T>
 T Gcd(T a, T b) {
-    while (a != b) {
-        if (a < b) {
-            T temp = a;
+    while (a != 0) {
+        if (b > a) {
+            auto temp = a;
             a = b;
             b = temp;
         }
-        a -= b;
+        a %= b;
     }
-    return a;
+    return b;
 }
 
-#endif
+#endif  // GCD_GCD_H
