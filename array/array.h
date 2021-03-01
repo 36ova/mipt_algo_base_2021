@@ -1,7 +1,6 @@
 #ifndef ARRAY_ARRAY_H
 #define ARRAY_ARRAY_H
 
-#include <iterator>
 #include <stdexcept>
 
 class ArrayOutOfRange : public std::out_of_range {
@@ -11,13 +10,14 @@ public:
 };
 
 template <class T, size_t N>
-struct Array {
+class Array {
 public:
     T array[N];
-    const T &operator[](size_t idx) const;
-    T &operator[](size_t idx);
-    T At(size_t idx) const;
-    T &At(size_t idx);
+
+    const T &operator[](const size_t idx) const;
+    T &operator[](const size_t idx);
+    T At(const size_t idx) const;
+    T &At(const size_t idx);
     T Front() const;
     T &Front();
     T Back() const;
@@ -37,17 +37,17 @@ public:
 };
 
 template <class T, size_t N>
-const T &Array<T, N>::operator[](size_t idx) const {
+const T &Array<T, N>::operator[](const size_t idx) const {
     return array[idx];
 }
 
 template <class T, size_t N>
-T &Array<T, N>::operator[](size_t idx) {
+T &Array<T, N>::operator[](const size_t idx) {
     return array[idx];
 }
 
 template <class T, size_t N>
-T Array<T, N>::At(size_t idx) const {
+T Array<T, N>::At(const size_t idx) const {
     if (idx >= N) {
         throw ArrayOutOfRange{};
     }
@@ -55,7 +55,7 @@ T Array<T, N>::At(size_t idx) const {
 }
 
 template <class T, size_t N>
-T &Array<T, N>::At(size_t idx) {
+T &Array<T, N>::At(const size_t idx) {
     if (idx >= N) {
         throw ArrayOutOfRange{};
     }
@@ -99,7 +99,7 @@ size_t Array<T, N>::Size() const {
 
 template <class T, size_t N>
 bool Array<T, N>::Empty() const {
-    return !(N);
+    return N == 0;
 }
 
 template <class T, size_t N>
@@ -171,6 +171,7 @@ bool Array<T, N>::operator!=(const Array<T, N> &other) const {
 
 template <class T, size_t N>
 void swap(Array<T, N> &first, Array<T, N> &second) {  // NOLINT
+    using std::swap;
     first.Swap(second);
 }
 
