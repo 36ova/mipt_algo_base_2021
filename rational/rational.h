@@ -26,8 +26,8 @@ public:
     void Reduce();
     int GetNumerator() const;
     int GetDenominator() const;
-    void SetNumerator(int x);
-    void SetDenominator(int y);
+    void SetNumerator(const int x);
+    void SetDenominator(const int y);
     Rational& operator+=(const Rational& other);
     Rational& operator-=(const Rational& other);
     Rational& operator*=(const Rational& other);
@@ -39,7 +39,7 @@ public:
     Rational operator++(int);
     Rational operator--(int);
     friend std::istream& operator>>(std::istream& is, Rational& value);
-    friend std::ostream& operator<<(std::ostream& os, const Rational& rt);
+    friend std::ostream& operator<<(std::ostream& os, const Rational& value);
 };
 
 Rational operator+(const Rational& x, const Rational& y);

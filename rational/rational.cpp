@@ -40,12 +40,12 @@ int Rational::GetDenominator() const {
     return q;
 }
 
-void Rational::SetNumerator(int x) {
+void Rational::SetNumerator(const int x) {
     p = x;
     Reduce();
 }
 
-void Rational::SetDenominator(int y) {
+void Rational::SetDenominator(const int y) {
     q = y;
     Reduce();
 }
