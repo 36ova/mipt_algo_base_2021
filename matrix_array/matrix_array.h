@@ -4,7 +4,7 @@
 #include <iostream>
 #include <istream>
 #include <ostream>
-//#include <util/constants.h>
+#include <util/constants.h>
 
 class MatrixArrayIsDegenerateError : public std::runtime_error {
 public:
@@ -19,20 +19,17 @@ public:
 };
 
 template <class T, size_t N, size_t M>
-struct MatrixArray {
+class MatrixArray {
 private:
 public:
     T matrix[N][M];
 
-    // MatrixArray();
-    // MatrixArray(std::initializer_list<T> l);
-    // MatrixArray(std::initializer_list<std::initializer_list<T>> l);
     size_t RowsNumber() const;
     size_t ColumnsNumber() const;
-    T& operator()(size_t idx_row, size_t idx_col);
-    const T& operator()(size_t idx_row, size_t idx_col) const;
-    T& At(size_t idx_row, size_t idx_col);
-    T At(size_t idx_row, size_t idx_col) const;
+    T& operator()(const size_t idx_row, const size_t idx_col);
+    const T& operator()(const size_t idx_row, const size_t idx_col) const;
+    T& At(const size_t idx_row, const size_t idx_col);
+    T At(const size_t idx_row, const size_t idx_col) const;
     MatrixArray<T, M, N> GetTransposed() const;
     MatrixArray<T, N, M> operator-() const;
     MatrixArray<T, N, M>& operator+=(const MatrixArray<T, N, M>& other);
@@ -41,38 +38,6 @@ public:
     MatrixArray<T, N, M>& operator*=(const T num);
     MatrixArray<T, N, M>& operator/=(const T num);
 };
-
-// template <class T, size_t N, size_t M>
-// MatrixArray<T, N, M>::MatrixArray() {
-//     for (size_t i = 0; i < N; ++i) {
-//         for (size_t j = 0; j < M; ++j) {
-//             matrix[i][j] = 0;
-//             // matrix[i][j] = kZero<T>;
-//         }
-//     }
-// }
-
-// template <class T, size_t N, size_t M>
-// MatrixArray<T, N, M>::MatrixArray(std::initializer_list<T> l) {
-//     size_t j = 0;
-//     for (auto y : l) {
-//         matrix[0][j] = y;
-//         ++j;
-//     }
-// }
-
-// template <class T, size_t N, size_t M>
-// MatrixArray<T, N, M>::MatrixArray(std::initializer_list<std::initializer_list<T>> l) {
-//     size_t i = 0;
-//     for (auto x : l) {
-//         size_t j = 0;
-//         for (auto y : x) {
-//             matrix[i][j] = y;
-//             ++j;
-//         }
-//         ++i;
-//     }
-// }
 
 template <class T, size_t N, size_t M>
 size_t MatrixArray<T, N, M>::RowsNumber() const {
@@ -85,17 +50,17 @@ size_t MatrixArray<T, N, M>::ColumnsNumber() const {
 }
 
 template <class T, size_t N, size_t M>
-T& MatrixArray<T, N, M>::operator()(size_t idx_row, size_t idx_col) {
+T& MatrixArray<T, N, M>::operator()(const size_t idx_row, const size_t idx_col) {
     return matrix[idx_row][idx_col];
 }
 
 template <class T, size_t N, size_t M>
-const T& MatrixArray<T, N, M>::operator()(size_t idx_row, size_t idx_col) const {
+const T& MatrixArray<T, N, M>::operator()(const size_t idx_row, const size_t idx_col) const {
     return matrix[idx_row][idx_col];
 }
 
 template <class T, size_t N, size_t M>
-T& MatrixArray<T, N, M>::At(size_t idx_row, size_t idx_col) {
+T& MatrixArray<T, N, M>::At(const size_t idx_row, const size_t idx_col) {
     if (idx_row >= N || idx_col >= M) {
         throw MatrixArrayOutOfRange{};
     }
@@ -103,7 +68,7 @@ T& MatrixArray<T, N, M>::At(size_t idx_row, size_t idx_col) {
 }
 
 template <class T, size_t N, size_t M>
-T MatrixArray<T, N, M>::At(size_t idx_row, size_t idx_col) const {
+T MatrixArray<T, N, M>::At(const size_t idx_row, const size_t idx_col) const {
     if (idx_row >= N || idx_col >= M) {
         throw MatrixArrayOutOfRange{};
     }
@@ -166,8 +131,7 @@ MatrixArray<T, N, M>& MatrixArray<T, N, M>::operator*=(const MatrixArray<T, M, M
     }
     for (size_t row = 0; row < N; ++row) {
         for (size_t col = 0; col < M; ++col) {
-            // T sum = kZero<T>;
-            T sum = 0;
+            T sum = kZero<T>;
             for (size_t ind = 0; ind < M; ++ind) {
                 sum += copy(row, ind) * other(ind, col);
             }
@@ -218,8 +182,7 @@ MatrixArray<T, N, K> operator*(const MatrixArray<T, N, M>& x, const MatrixArray<
     MatrixArray<T, N, K> result;
     for (size_t row = 0; row < N; ++row) {
         for (size_t col = 0; col < K; ++col) {
-            // T sum = kZero<T>;
-            T sum = 0;
+            T sum = kZero<T>;
             for (size_t ind = 0; ind < M; ++ind) {
                 sum += x(row, ind) * y(ind, col);
             }
