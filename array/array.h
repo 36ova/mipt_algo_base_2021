@@ -14,10 +14,10 @@ class Array {
 public:
     T array[N];
 
-    const T &operator[](const size_t idx) const;
-    T &operator[](const size_t idx);
-    T At(const size_t idx) const;
-    T &At(const size_t idx);
+    const T &operator[](size_t idx) const;
+    T &operator[](size_t idx);
+    T At(size_t idx) const;
+    T &At(size_t idx);
     T Front() const;
     T &Front();
     T Back() const;
@@ -37,17 +37,17 @@ public:
 };
 
 template <class T, size_t N>
-const T &Array<T, N>::operator[](const size_t idx) const {
+const T &Array<T, N>::operator[](size_t idx) const {
     return array[idx];
 }
 
 template <class T, size_t N>
-T &Array<T, N>::operator[](const size_t idx) {
+T &Array<T, N>::operator[](size_t idx) {
     return array[idx];
 }
 
 template <class T, size_t N>
-T Array<T, N>::At(const size_t idx) const {
+T Array<T, N>::At(size_t idx) const {
     if (idx >= N) {
         throw ArrayOutOfRange{};
     }
@@ -55,7 +55,7 @@ T Array<T, N>::At(const size_t idx) const {
 }
 
 template <class T, size_t N>
-T &Array<T, N>::At(const size_t idx) {
+T &Array<T, N>::At(size_t idx) {
     if (idx >= N) {
         throw ArrayOutOfRange{};
     }
@@ -169,10 +169,11 @@ bool Array<T, N>::operator!=(const Array<T, N> &other) const {
     return !(*this == other);
 }
 
+namespace std {  // NOLINT
 template <class T, size_t N>
-void swap(Array<T, N> &first, Array<T, N> &second) {  // NOLINT
-    using std::swap;
+void swap(Array<T, N> &first, Array<T, N> &second) {
     first.Swap(second);
 }
+}  // namespace std
 
-#endif
+#endif  // ARRAY_ARRAY_H
