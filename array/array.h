@@ -169,9 +169,9 @@ bool Array<T, N>::operator!=(const Array<T, N> &other) const {
     return !(*this == other);
 }
 
-namespace std {  // NOLINT
+namespace std {
 template <class T, size_t N>
-void swap(Array<T, N> &first, Array<T, N> &second) {
+void swap(Array<T, N> &first, Array<T, N> &second) {  // NOLINT
     first.Swap(second);
 }
 }  // namespace std
