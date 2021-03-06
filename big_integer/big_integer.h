@@ -5,8 +5,6 @@
 #include <stdexcept>
 #include <iostream>
 
-// using namespace std;
-
 class BigIntegerOverflow : public std::runtime_error {
 public:
     BigIntegerOverflow() : std::runtime_error("BigIntegerOverflow") {
@@ -40,29 +38,18 @@ public:
     BigInteger(int64_t num);  //  NOLINT
     explicit BigInteger(const char* str);
     BigInteger(const BigInteger<NDigits>& other);
-
-    // void Show() const;
     bool IsNegative() const;
-
     BigInteger<NDigits>& operator=(const BigInteger<NDigits>& other);
     BigInteger<NDigits> operator+() const;
     BigInteger<NDigits> operator-() const;
     BigInteger<NDigits>& operator+=(const BigInteger<NDigits>& other);
     BigInteger<NDigits>& operator-=(const BigInteger<NDigits>& other);
     BigInteger<NDigits>& operator*=(const BigInteger<NDigits>& other);
-
     BigInteger<NDigits>& operator++();
     BigInteger<NDigits>& operator--();
     BigInteger<NDigits> operator++(int);
     BigInteger<NDigits> operator--(int);
     explicit operator bool() const;
-    // friend int Stop(const BigInteger<NDigits>& x, const BigInteger<NDigits>& y) {
-    //     int i  = blocks_ - 1;
-    //     while(i >= 0 && x.number_[i] == 0 && y.number_[i] == 0) {
-    //         --i;
-    //     }
-    //     return i;
-    // }
     friend std::istream& operator>>(std::istream& is, BigInteger<NDigits>& big_num) {
         for (size_t i = 0; i < big_num.blocks_; ++i) {
             big_num.number_[i] = 0;
@@ -153,48 +140,17 @@ public:
             return false;
         }
         if (!x.IsNegative() && !y.IsNegative()) {
-            for (int i = x.blocks_ - 1; i >= 0; --i) {
-                if (x.number_[i] > y.number_[i]) {
-                    return false;
-                }
-                if (x.number_[i] < y.number_[i]) {
-                    return true;
-                }
-            }
-            return false;
+            return AbsLess(x, y);
         }
-        for (int i = x.blocks_ - 1; i >= 0; --i) {
-            if (y.number_[i] > x.number_[i]) {
-                return false;
-            }
-            if (y.number_[i] < x.number_[i]) {
-                return true;
-            }
-        }
-        return false;
+        return AbsLess(y, x);
     }
     friend bool operator==(const BigInteger<NDigits>& x, const BigInteger<NDigits>& y) {
         if (x.IsNegative() != y.IsNegative()) {
             return false;
         }
-        for (int i = x.blocks_ - 1; i >= 0; --i) {
-            if (y.number_[i] != x.number_[i]) {
-                return false;
-            }
-        }
-        return true;
+        return AbsEqual(x, y);
     }
 };
-
-// template <size_t NDigits>
-// void BigInteger<NDigits>::Show() const {
-//     std::cout << "\n--------------s-h-o-w--------------------\n";
-//     std::cout << (negative_ ? "neg: " : "pos: ");
-//     for (size_t i = 0; i < blocks_; ++i) {
-//         std::cout << this->number_[i] << ' ';
-//     }
-//     std::cout << "\n------------------------------------\n";
-// }
 
 template <size_t NDigits>
 BigInteger<NDigits>::BigInteger() : negative_(false) {
@@ -216,7 +172,6 @@ BigInteger<NDigits>::BigInteger(int num) : negative_(false) {
     while (num != 0) {
         int block = num % 10000;
         if (counter >= blocks_) {
-            // cout << "\nEXCEPTION: BigInteger(long long num)\n";
             throw BigIntegerOverflow{};
         }
         this->number_[counter] = block;
@@ -238,7 +193,6 @@ BigInteger<NDigits>::BigInteger(int64_t num) : negative_(false) {
     while (num != 0) {
         int block = static_cast<int>(num % 10000);
         if (counter >= blocks_) {
-            // cout << "\nEXCEPTION: BigInteger(long long num)\n";
             throw BigIntegerOverflow{};
         }
         this->number_[counter] = block;
@@ -257,7 +211,6 @@ BigInteger<NDigits>::BigInteger(const char* str) : negative_(false) {
     }
     size_t length = ((str[0] == '-' || str[0] == '+') ? strlen(str) - 1 : strlen(str));
     if (length > NDigits) {
-        // cout << "\nEXCEPTION: BigInteger(const char* str)\n";
         throw BigIntegerOverflow{};
     }
     length = ((str[0] == '-' || str[0] == '+') ? length + 1 : length);
@@ -323,7 +276,6 @@ BigInteger<NDigits> BigInteger<NDigits>::operator-() const {
 
 template <size_t NDigits>
 void BigInteger<NDigits>::Add(const BigInteger<NDigits>& other) {
-    // cout << "----Function Add called, numbers: "  << *this << " and " << other;
     size_t inc = 0;
     for (size_t i = 0; i < blocks_; ++i) {
         int sum = number_[i] + other.number_[i];
@@ -331,19 +283,15 @@ void BigInteger<NDigits>::Add(const BigInteger<NDigits>& other) {
         inc = (sum + inc) / 10000;
     }
     if (inc != 0) {
-        // cout << "\nEXCEPTION: Add(const BigInteger<NDigits>& other)\n";
         throw BigIntegerOverflow{};
     }
-    // cout << ", result: " << *this << '\n';
 }
 
 template <size_t NDigits>
 void BigInteger<NDigits>::Subtract(const BigInteger<NDigits>& other) {
-    // cout << "----Function Subtract called, numbers: "  << *this << " and " << other << ", case: ";
     if (AbsEqual(*this, other)) {
         *this = BigInteger<NDigits>();
     } else if (!AbsLess(*this, other)) {
-        // cout << "normal";
         for (size_t i = 0; i < blocks_; ++i) {
             if (number_[i] < other.number_[i]) {
                 number_[i] += 10000;
@@ -352,7 +300,6 @@ void BigInteger<NDigits>::Subtract(const BigInteger<NDigits>& other) {
             number_[i] -= other.number_[i];
         }
     } else {
-        // cout << "reverse";
         for (size_t i = 0; i < blocks_; ++i) {
             if (other.number_[i] < number_[i]) {
                 number_[i] -= 10000;
@@ -362,34 +309,24 @@ void BigInteger<NDigits>::Subtract(const BigInteger<NDigits>& other) {
         }
         negative_ = !(negative_);
     }
-    // cout << ", result: " << *this << '\n';
 }
 
 template <size_t NDigits>
 BigInteger<NDigits>& BigInteger<NDigits>::operator+=(const BigInteger<NDigits>& other) {
-    // cout << "--Adding 2 numbers:\n";
-    // cout << "    " << (negative_ ? "negative " : "positive ") << *this << '\n';
-    // cout << "    " << (other.negative_ ? "negative " : "positive ") << other << '\n';
     if (this == &other) {
-        // cout << "\nmultiply case\n";
         this->Multiply(2);
     } else {
         if (negative_ == other.negative_) {
-            // cout << "\nadd case\n";
             this->Add(other);
         } else {
-            // cout << "\nsubtr case\n";
             this->Subtract(other);
         }
     }
-    // cout << "--Operator += result: " << *this << '\n';
     return *this;
 }
 
 template <size_t NDigits>
 BigInteger<NDigits>& BigInteger<NDigits>::operator-=(const BigInteger<NDigits>& other) {
-    // cout << "Subtracting 2 numbers: " << (negative_ ? "negative" : "positive") << " and " << (other.negative_ ?
-    // "negative" : "positive") << '\n';
     if (this == &other) {
         this->negative_ = false;
         for (size_t i = 0; i < blocks_; ++i) {
@@ -415,7 +352,6 @@ BigInteger<NDigits>& BigInteger<NDigits>::operator*=(const BigInteger<NDigits>& 
         if (summand.IsNegative()) {
             summand.negative_ = false;
         }
-        // cout << "============== summand #" << i << ": " << summand << "============\n";
         result += summand;
     }
     if (this->negative_ != other.negative_ && result.number_[0] != 0) {
@@ -449,7 +385,6 @@ void BigInteger<NDigits>::TenTimes() {
         }
     }
     if (inc != 0) {
-        // cout << "\nEXCEPTION: TenTimes()\n";
         throw BigIntegerOverflow{};
     }
 }
@@ -487,7 +422,6 @@ size_t BigInteger<NDigits>::Digits() const {
 
 template <size_t NDigits>
 void BigInteger<NDigits>::Multiply(const int digit) {
-    // cout << "---Function Multiply called, numbers: "  << *this << " and " << digit;
     size_t inc = 0;
     for (size_t i = 0; i < blocks_; ++i) {
         int product = number_[i] * digit;
@@ -495,15 +429,12 @@ void BigInteger<NDigits>::Multiply(const int digit) {
         inc = (product + inc) / 10000;
     }
     if (inc != 0) {
-        // cout << "\nEXCEPTION: Multiply(const int digit)\n";
         throw BigIntegerOverflow{};
     }
-    // cout << ", result: " << *this << '\n';
 }
 
 template <size_t NDigits>
 void BigInteger<NDigits>::MultiplyByBlock(size_t block) {
-    // cout << "\nFunction MultiplyByBlock called, numbers: " << *this << " and " << block << "\n";
     size_t digits[4];
     for (size_t i = 0; i < 4; ++i) {
         digits[i] = block % 10;
@@ -516,7 +447,6 @@ void BigInteger<NDigits>::MultiplyByBlock(size_t block) {
         summand.TenTimes(i);
         result += summand;
     }
-    // cout << "MultiplyByBlock result: " << result << "\n\n";
     *this = result;
 }
 
@@ -551,8 +481,6 @@ BigInteger<NDigits>::operator bool() const {
     BigInteger<NDigits> null;
     return !(*this == null);
 }
-
-// EXTERNAL:
 
 template <size_t NDigits>
 BigInteger<NDigits> operator+(const BigInteger<NDigits>& x, const BigInteger<NDigits>& y) {
