@@ -113,42 +113,42 @@ public:
         }
         return os;
     }
-    friend bool AbsLess(const BigInteger<NDigits>& x, const BigInteger<NDigits>& y) {
-        for (int i = x.blocks_ - 1; i >= 0; --i) {
-            if (x.number_[i] > y.number_[i]) {
+    friend bool AbsLess(const BigInteger<NDigits>& first, const BigInteger<NDigits>& second) {
+        for (int i = first.blocks_ - 1; i >= 0; --i) {
+            if (first.number_[i] > second.number_[i]) {
                 return false;
             }
-            if (x.number_[i] < y.number_[i]) {
+            if (first.number_[i] < second.number_[i]) {
                 return true;
             }
         }
         return false;
     }
-    friend bool AbsEqual(const BigInteger<NDigits>& x, const BigInteger<NDigits>& y) {
-        for (int i = x.blocks_ - 1; i >= 0; --i) {
-            if (x.number_[i] != y.number_[i]) {
+    friend bool AbsEqual(const BigInteger<NDigits>& first, const BigInteger<NDigits>& second) {
+        for (int i = first.blocks_ - 1; i >= 0; --i) {
+            if (first.number_[i] != second.number_[i]) {
                 return false;
             }
         }
         return true;
     }
-    friend bool operator<(const BigInteger<NDigits>& x, const BigInteger<NDigits>& y) {
-        if (x.IsNegative() && !y.IsNegative()) {
+    friend bool operator<(const BigInteger<NDigits>& first, const BigInteger<NDigits>& second) {
+        if (first.IsNegative() && !second.IsNegative()) {
             return true;
         }
-        if (!x.IsNegative() && y.IsNegative()) {
+        if (!first.IsNegative() && second.IsNegative()) {
             return false;
         }
-        if (!x.IsNegative() && !y.IsNegative()) {
-            return AbsLess(x, y);
+        if (!first.IsNegative() && !second.IsNegative()) {
+            return AbsLess(first, second);
         }
-        return AbsLess(y, x);
+        return AbsLess(second, first);
     }
-    friend bool operator==(const BigInteger<NDigits>& x, const BigInteger<NDigits>& y) {
-        if (x.IsNegative() != y.IsNegative()) {
+    friend bool operator==(const BigInteger<NDigits>& first, const BigInteger<NDigits>& second) {
+        if (first.IsNegative() != second.IsNegative()) {
             return false;
         }
-        return AbsEqual(x, y);
+        return AbsEqual(first, second);
     }
 };
 
@@ -483,44 +483,44 @@ BigInteger<NDigits>::operator bool() const {
 }
 
 template <size_t NDigits>
-BigInteger<NDigits> operator+(const BigInteger<NDigits>& x, const BigInteger<NDigits>& y) {
-    BigInteger<NDigits> result(x);
-    result += y;
+BigInteger<NDigits> operator+(const BigInteger<NDigits>& first, const BigInteger<NDigits>& second) {
+    BigInteger<NDigits> result(first);
+    result += second;
     return result;
 }
 
 template <size_t NDigits>
-BigInteger<NDigits> operator-(const BigInteger<NDigits>& x, const BigInteger<NDigits>& y) {
-    BigInteger<NDigits> result(x);
-    result -= y;
+BigInteger<NDigits> operator-(const BigInteger<NDigits>& first, const BigInteger<NDigits>& second) {
+    BigInteger<NDigits> result(first);
+    result -= second;
     return result;
 }
 
 template <size_t NDigits>
-BigInteger<NDigits> operator*(const BigInteger<NDigits>& x, const BigInteger<NDigits>& y) {
-    BigInteger<NDigits> result(x);
-    result *= y;
+BigInteger<NDigits> operator*(const BigInteger<NDigits>& first, const BigInteger<NDigits>& second) {
+    BigInteger<NDigits> result(first);
+    result *= second;
     return result;
 }
 
 template <size_t NDigits>
-bool operator>(const BigInteger<NDigits>& x, const BigInteger<NDigits>& y) {
-    return (y < x);
+bool operator>(const BigInteger<NDigits>& first, const BigInteger<NDigits>& second) {
+    return (second < first);
 }
 
 template <size_t NDigits>
-bool operator<=(const BigInteger<NDigits>& x, const BigInteger<NDigits>& y) {
-    return !(y < x);
+bool operator<=(const BigInteger<NDigits>& first, const BigInteger<NDigits>& second) {
+    return !(second < first);
 }
 
 template <size_t NDigits>
-bool operator>=(const BigInteger<NDigits>& x, const BigInteger<NDigits>& y) {
-    return !(x < y);
+bool operator>=(const BigInteger<NDigits>& first, const BigInteger<NDigits>& second) {
+    return !(first < second);
 }
 
 template <size_t NDigits>
-bool operator!=(const BigInteger<NDigits>& x, const BigInteger<NDigits>& y) {
-    return !(x == y);
+bool operator!=(const BigInteger<NDigits>& first, const BigInteger<NDigits>& second) {
+    return !(first == second);
 }
 
 #endif
