@@ -1,61 +1,61 @@
 #include "../include/rational.h"
 
-Rational::Rational(const int x, const int y) {
-    p = x;
-    q = y;
+Rational::Rational(const int first, const int second) {
+    num_ = first;
+    denom_ = second;
     Reduce();
 }
 
-int get_gcd(int a, int b) {
-    a = abs(a);
-    b = abs(b);
-    while (a != 0) {
-        if (b > a) {
-            std::swap(a, b);
+int GetGcd(int first, int second) {
+    first = abs(first);
+    second = abs(second);
+    while (first != 0) {
+        if (second > first) {
+            std::swap(first, second);
         }
-        a %= b;
+        first %= second;
     }
-    return b;
+    return second;
 }
 
 void Rational::Reduce() {
-    if (q == 0) {
+    if (denom_ == 0) {
         throw RationalDivisionByZero{};
     }
-    int gcd = get_gcd(p, q);
-    if (q < 0) {
-        p *= -1;
-        q *= -1;
+    int gcd = GetGcd(num_, denom_);
+    if (denom_ < 0) {
+        num_ *= -1;
+        denom_ *= -1;
     }
-    p /= gcd;
-    q /= gcd;
+    num_ /= gcd;
+    denom_ /= gcd;
 }
 
 int Rational::GetNumerator() const {
-    return p;
+    return num_;
 }
 
 int Rational::GetDenominator() const {
-    return q;
+    return denom_;
 }
 
-void Rational::SetNumerator(const int x) {
-    p = x;
+void Rational::SetNumerator(const int number) {
+    num_ = number;
     Reduce();
 }
 
-void Rational::SetDenominator(const int y) {
-    q = y;
+void Rational::SetDenominator(const int number) {
+    denom_ = number;
     Reduce();
 }
 
 Rational& Rational::operator+=(const Rational& other) {
     if (other == *this) {
-        p *= 2;
+        num_ *= 2;
     } else {
-        int gcd = get_gcd(q, other.q);
-        p = p * (other.q / gcd) + other.p * (q / gcd);
-        q = q * other.q / gcd;
+        int gcd = GetGcd(denom_, other.denom_);
+        num_ = num_ * (other.denom_ / gcd) + other.num_ * (denom_ / gcd);
+        denom_ = denom_ * other.denom_ / gcd;
     }
     Reduce();
     return *this;
@@ -63,8 +63,8 @@ Rational& Rational::operator+=(const Rational& other) {
 
 Rational& Rational::operator-=(const Rational& other) {
     if (other == *this) {
-        p = 0;
-        q = 1;
+        num_ = 0;
+        denom_ = 1;
     } else {
         *this += (-other);
         Reduce();
@@ -73,53 +73,53 @@ Rational& Rational::operator-=(const Rational& other) {
 }
 
 Rational& Rational::operator*=(const Rational& other) {
-    p *= other.p;
-    q *= other.q;
+    num_ *= other.num_;
+    denom_ *= other.denom_;
     Reduce();
     return *this;
 }
 
 Rational& Rational::operator/=(const Rational& other) {
     if (other == *this) {
-        p = q = 1;
+        num_ = denom_ = 1;
     } else {
-        p *= other.q;
-        q *= other.p;
+        num_ *= other.denom_;
+        denom_ *= other.num_;
         Reduce();
     }
     return *this;
 }
 
 Rational Rational::operator+() const {
-    return Rational(p, q);
+    return Rational(num_, denom_);
 }
 
 Rational Rational::operator-() const {
-    return Rational(-p, q);
+    return Rational(-num_, denom_);
 }
 
 Rational& Rational::operator++() {
-    p += q;
+    num_ += denom_;
     Reduce();
     return *this;
 }
 
 Rational& Rational::operator--() {
-    p -= q;
+    num_ -= denom_;
     Reduce();
     return *this;
 }
 
 Rational Rational::operator++(int) {
     auto old_value = *this;
-    p += q;
+    num_ += denom_;
     Reduce();
     return old_value;
 }
 
 Rational Rational::operator--(int) {
     auto old_value = *this;
-    p -= q;
+    num_ -= denom_;
     Reduce();
     return old_value;
 }
@@ -129,80 +129,80 @@ std::istream& operator>>(std::istream& is, Rational& value) {
     char str[MaxStringSize];
     is >> str;
     char* end_ptr;
-    value.p = strtoll(str, &end_ptr, 10);
+    value.num_ = strtoll(str, &end_ptr, 10);
     if (*end_ptr != 0) {
         ++end_ptr;
-        value.q = strtoll(end_ptr, &end_ptr, 10);
+        value.denom_ = strtoll(end_ptr, &end_ptr, 10);
     } else {
-        value.q = 1;
+        value.denom_ = 1;
     }
     value.Reduce();
     return is;
 }
 
 std::ostream& operator<<(std::ostream& os, const Rational& value) {
-    if (value.q == 1) {
-        os << value.p;
+    if (value.denom_ == 1) {
+        os << value.num_;
     } else {
-        os << value.p << '/' << value.q;
+        os << value.num_ << '/' << value.denom_;
     }
     return os;
 }
 
-Rational operator+(const Rational& x, const Rational& y) {
-    Rational res;
-    int a = x.GetDenominator();
-    int b = y.GetDenominator();
-    int gcd = get_gcd(a, b);
-    int num = x.GetNumerator() * (b / gcd) + y.GetNumerator() * (a / gcd);
-    res.SetNumerator(num);
-    res.SetDenominator(a * b / gcd);
-    res.Reduce();
-    return res;
+Rational operator+(const Rational& first, const Rational& second) {
+    Rational result;
+    int first_denom = first.GetDenominator();
+    int second_denom = second.GetDenominator();
+    int gcd = GetGcd(first_denom, second_denom);
+    int num = first.GetNumerator() * (second_denom / gcd) + second.GetNumerator() * (first_denom / gcd);
+    result.SetNumerator(num);
+    result.SetDenominator(first_denom * second_denom / gcd);
+    result.Reduce();
+    return result;
 }
 
-Rational operator-(const Rational& x, const Rational& y) {
-    return (x + (-y));
+Rational operator-(const Rational& first, const Rational& second) {
+    return (first + (-second));
 }
 
-Rational operator*(const Rational& x, const Rational& y) {
-    Rational res;
-    res.SetNumerator(x.GetNumerator() * y.GetNumerator());
-    res.SetDenominator(x.GetDenominator() * y.GetDenominator());
-    res.Reduce();
-    return res;
+Rational operator*(const Rational& first, const Rational& second) {
+    Rational result;
+    result.SetNumerator(first.GetNumerator() * second.GetNumerator());
+    result.SetDenominator(first.GetDenominator() * second.GetDenominator());
+    result.Reduce();
+    return result;
 }
 
-Rational operator/(const Rational& x, const Rational& y) {
-    Rational res;
-    res.SetNumerator(x.GetNumerator() * y.GetDenominator());
-    res.SetDenominator(x.GetDenominator() * y.GetNumerator());
-    res.Reduce();
-    return res;
+Rational operator/(const Rational& first, const Rational& second) {
+    Rational result;
+    result.SetNumerator(first.GetNumerator() * second.GetDenominator());
+    result.SetDenominator(first.GetDenominator() * second.GetNumerator());
+    result.Reduce();
+    return result;
 }
 
-bool operator<(const Rational& x, const Rational& y) {
-    int fold = x.GetNumerator() * y.GetDenominator();
-    return fold < y.GetNumerator() * x.GetDenominator();
+bool operator<(const Rational& first, const Rational& second) {
+    int fold = first.GetNumerator() * second.GetDenominator();
+    return fold < second.GetNumerator() * first.GetDenominator();
 }
 
-bool operator>(const Rational& x, const Rational& y) {
-    return y < x;
+bool operator>(const Rational& first, const Rational& second) {
+    return second < first;
 }
 
-bool operator<=(const Rational& x, const Rational& y) {
-    return !(x > y);
+bool operator<=(const Rational& first, const Rational& second) {
+    return !(first > second);
 }
 
-bool operator>=(const Rational& x, const Rational& y) {
-    return !(x < y);
+bool operator>=(const Rational& first, const Rational& second) {
+    return !(first < second);
 }
 
-bool operator==(const Rational& x, const Rational& y) {
-    int fold = x.GetNumerator() * y.GetDenominator();
-    return fold == y.GetNumerator() * x.GetDenominator();
+bool operator==(const Rational& first, const Rational& second) {
+    int fold = first.GetNumerator() * second.GetDenominator();
+    return fold == second.GetNumerator() * first.GetDenominator();
 }
 
-bool operator!=(const Rational& x, const Rational& y) {
-    return !(x == y);
+bool operator!=(const Rational& first, const Rational& second) {
+    return !(first == second);
 }
