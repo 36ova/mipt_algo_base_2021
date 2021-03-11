@@ -11,22 +11,22 @@ public:
     }
 };
 
-int gcd(int a, int b);
+int GetGcd(int first, int second);
 
 class Rational {
 private:
-    int p;
-    int q;
+    int num_;
+    int denom_;
 
 public:
-    Rational() : p(0), q(1){};
-    Rational(const int x) : p(x), q(1){};  // NOLINT
-    Rational(const int x, const int y);
+    Rational() : num_(0), denom_(1){};
+    Rational(const int number) : num_(number), denom_(1){};  // NOLINT
+    Rational(const int first, const int second);
     void Reduce();
     int GetNumerator() const;
     int GetDenominator() const;
-    void SetNumerator(const int x);
-    void SetDenominator(const int y);
+    void SetNumerator(const int number);
+    void SetDenominator(const int number);
     Rational& operator+=(const Rational& other);
     Rational& operator-=(const Rational& other);
     Rational& operator*=(const Rational& other);
@@ -41,15 +41,15 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Rational& value);
 };
 
-Rational operator+(const Rational& x, const Rational& y);
-Rational operator-(const Rational& x, const Rational& y);
-Rational operator*(const Rational& x, const Rational& y);
-Rational operator/(const Rational& x, const Rational& y);
-bool operator<(const Rational& x, const Rational& y);
-bool operator>(const Rational& x, const Rational& y);
-bool operator<=(const Rational& x, const Rational& y);
-bool operator>=(const Rational& x, const Rational& y);
-bool operator==(const Rational& x, const Rational& y);
-bool operator!=(const Rational& x, const Rational& y);
+Rational operator+(const Rational& first, const Rational& second);
+Rational operator-(const Rational& first, const Rational& second);
+Rational operator*(const Rational& first, const Rational& second);
+Rational operator/(const Rational& first, const Rational& second);
+bool operator<(const Rational& first, const Rational& second);
+bool operator>(const Rational& first, const Rational& second);
+bool operator<=(const Rational& first, const Rational& second);
+bool operator>=(const Rational& first, const Rational& second);
+bool operator==(const Rational& first, const Rational& second);
+bool operator!=(const Rational& first, const Rational& second);
 
 #endif  // RATIONAL_RATIONAL_H
