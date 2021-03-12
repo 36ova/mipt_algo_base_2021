@@ -28,7 +28,6 @@ private:
     void Subtract(const BigInteger<NDigits>& other);
     void TenTimes();
     void TenTimes(const size_t repeat);
-    size_t Digits() const;
     void Multiply(const int digit);
     void MultiplyByBlock(size_t block);
 
@@ -396,28 +395,6 @@ void BigInteger<NDigits>::TenTimes(const size_t repeat) {
             this->TenTimes();
         }
     }
-}
-
-template <size_t NDigits>
-size_t BigInteger<NDigits>::Digits() const {
-    int ind = blocks_ - 1;
-    while (number_[ind] == 0) {
-        --ind;
-    }
-    if (ind == -1) {
-        return 0;
-    }
-    size_t result = 4 * ind;
-    if (number_[ind] / 10 == 0) {
-        result += 1;
-    } else if (number_[ind] / 100 == 0) {
-        result += 2;
-    } else if (number_[ind] / 1000 == 0) {
-        result += 3;
-    } else {
-        result += 4;
-    }
-    return result;
 }
 
 template <size_t NDigits>
