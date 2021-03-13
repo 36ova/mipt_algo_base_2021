@@ -90,6 +90,11 @@ public:
             big_num.number_[counter] = block;
             ++counter;
         }
+        big_num.active_blocks_ = counter;
+        if (counter == 1 && big_num.number_[0] == 0) {
+            big_num.negative_ = false;
+            big_num.active_blocks_ = 0;
+        }
         return is;
     }
     friend std::ostream& operator<<(std::ostream& os, const BigInteger<NDigits>& big_num) {
@@ -296,7 +301,9 @@ BigInteger<NDigits> BigInteger<NDigits>::operator+() const {
 template <size_t NDigits>
 BigInteger<NDigits> BigInteger<NDigits>::operator-() const {
     BigInteger<NDigits> result(*this);
-    result.negative_ = !(this->negative_);
+    if (active_blocks_ != 0) {
+        result.negative_ = !(this->negative_);
+    }
     return result;
 }
 
