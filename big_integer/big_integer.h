@@ -5,8 +5,6 @@
 #include <stdexcept>
 #include <iostream>
 
-// using namespace std;
-
 class BigIntegerOverflow : public std::runtime_error {
 public:
     BigIntegerOverflow() : std::runtime_error("BigIntegerOverflow") {
@@ -35,7 +33,6 @@ private:
     void MultiplyByBlock(size_t block);
 
 public:
-    // void Show() const;
     BigInteger();
     BigInteger(int num);      //  NOLINT
     BigInteger(int64_t num);  //  NOLINT
@@ -161,18 +158,6 @@ public:
         return AbsEqual(first, second);
     }
 };
-
-// template <size_t NDigits>
-// void BigInteger<NDigits>::Show() const {
-//     cout << "\n=========s==h==o==w====================\n";
-//     cout << *this << '\n';
-//     cout << (negative_ ? "negative, " : "positive, ");
-//     cout << "active blocks: " << active_blocks_ << '\n';
-//     for (size_t i = 0; i < active_blocks_; ++i) {
-//         cout << number_[i] << ' ';
-//     }
-//     cout << "\n=========s==h==o==w====================\n\n";
-// }
 
 template <size_t NDigits>
 BigInteger<NDigits>::BigInteger() : negative_(false), active_blocks_(0) {
