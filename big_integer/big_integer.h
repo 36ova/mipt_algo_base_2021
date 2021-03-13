@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include <iostream>
 
+// using namespace std;
+
 class BigIntegerOverflow : public std::runtime_error {
 public:
     BigIntegerOverflow() : std::runtime_error("BigIntegerOverflow") {
@@ -23,6 +25,7 @@ private:
     const size_t blocks_ = NDigits / 4 + 1;
     bool negative_ = false;
     int number_[NDigits / 4 + 1];
+    size_t active_blocks_;
 
     void Add(const BigInteger<NDigits>& other);
     void Subtract(const BigInteger<NDigits>& other);
@@ -32,6 +35,7 @@ private:
     void MultiplyByBlock(size_t block);
 
 public:
+    // void Show() const;
     BigInteger();
     BigInteger(int num);      //  NOLINT
     BigInteger(int64_t num);  //  NOLINT
@@ -113,7 +117,8 @@ public:
         return os;
     }
     friend bool AbsLess(const BigInteger<NDigits>& first, const BigInteger<NDigits>& second) {
-        for (int i = first.blocks_ - 1; i >= 0; --i) {
+        int end = std::max(first.active_blocks_, second.active_blocks_);
+        for (int i = end - 1; i >= 0; --i) {
             if (first.number_[i] > second.number_[i]) {
                 return false;
             }
@@ -124,7 +129,8 @@ public:
         return false;
     }
     friend bool AbsEqual(const BigInteger<NDigits>& first, const BigInteger<NDigits>& second) {
-        for (int i = first.blocks_ - 1; i >= 0; --i) {
+        int end = std::max(first.active_blocks_, second.active_blocks_);
+        for (int i = end - 1; i >= 0; --i) {
             if (first.number_[i] != second.number_[i]) {
                 return false;
             }
@@ -151,8 +157,20 @@ public:
     }
 };
 
+// template <size_t NDigits>
+// void BigInteger<NDigits>::Show() const {
+//     cout << "\n=========s==h==o==w====================\n";
+//     cout << *this << '\n';
+//     cout << (negative_ ? "negative, " : "positive, ");
+//     cout << "active blocks: " << active_blocks_ << '\n';
+//     for (size_t i = 0; i < active_blocks_; ++i) {
+//         cout << number_[i] << ' ';
+//     }
+//     cout << "\n=========s==h==o==w====================\n\n";
+// }
+
 template <size_t NDigits>
-BigInteger<NDigits>::BigInteger() : negative_(false) {
+BigInteger<NDigits>::BigInteger() : negative_(false), active_blocks_(0) {
     for (size_t i = 0; i < blocks_; ++i) {
         this->number_[i] = 0;
     }
@@ -177,6 +195,7 @@ BigInteger<NDigits>::BigInteger(int num) : negative_(false) {
         num /= 10000;
         ++counter;
     }
+    active_blocks_ = counter;
 }
 
 template <size_t NDigits>
@@ -198,6 +217,7 @@ BigInteger<NDigits>::BigInteger(int64_t num) : negative_(false) {
         num /= 10000;
         ++counter;
     }
+    active_blocks_ = counter;
 }
 
 template <size_t NDigits>
@@ -235,14 +255,19 @@ BigInteger<NDigits>::BigInteger(const char* str) : negative_(false) {
         this->number_[counter] = block;
         ++counter;
     }
+    active_blocks_ = counter;
 }
 
 template <size_t NDigits>
 BigInteger<NDigits>::BigInteger(const BigInteger<NDigits>& other) {
-    for (size_t i = 0; i < blocks_; ++i) {
+    for (size_t i = 0; i < other.active_blocks_; ++i) {
         this->number_[i] = other.number_[i];
     }
+    for (size_t i = other.active_blocks_; i < blocks_; ++i) {
+        this->number_[i] = 0;
+    }
     this->negative_ = other.negative_;
+    this->active_blocks_ = other.active_blocks_;
 }
 
 template <size_t NDigits>
@@ -252,11 +277,13 @@ bool BigInteger<NDigits>::IsNegative() const {
 
 template <size_t NDigits>
 BigInteger<NDigits>& BigInteger<NDigits>::operator=(const BigInteger<NDigits>& other) {
-    if (*this != other) {
+    if (this != &other) {
         this->negative_ = other.negative_;
-        for (size_t i = 0; i < blocks_; ++i) {
+        size_t end = std::max(this->active_blocks_, other.active_blocks_);
+        for (size_t i = 0; i < end; ++i) {
             this->number_[i] = other.number_[i];
         }
+        this->active_blocks_ = other.active_blocks_;
     }
     return *this;
 }
@@ -276,49 +303,73 @@ BigInteger<NDigits> BigInteger<NDigits>::operator-() const {
 template <size_t NDigits>
 void BigInteger<NDigits>::Add(const BigInteger<NDigits>& other) {
     size_t inc = 0;
-    for (size_t i = 0; i < blocks_; ++i) {
-        int sum = number_[i] + other.number_[i];
-        number_[i] = (sum + inc) % 10000;
+    size_t end = std::max(active_blocks_, other.active_blocks_);
+    size_t ind = 0;
+    while (ind < end) {
+        int sum = number_[ind] + other.number_[ind];
+        number_[ind] = (sum + inc) % 10000;
         inc = (sum + inc) / 10000;
+        ++ind;
     }
+    active_blocks_ = ind;
     if (inc != 0) {
-        throw BigIntegerOverflow{};
+        if (ind < blocks_) {
+            number_[ind] = inc;
+            active_blocks_ = ind + 1;
+        } else {
+            throw BigIntegerOverflow{};
+        }
     }
 }
 
 template <size_t NDigits>
 void BigInteger<NDigits>::Subtract(const BigInteger<NDigits>& other) {
     if (AbsEqual(*this, other)) {
-        *this = BigInteger<NDigits>();
-    } else if (!AbsLess(*this, other)) {
-        for (size_t i = 0; i < blocks_; ++i) {
-            if (number_[i] < other.number_[i]) {
-                number_[i] += 10000;
-                number_[i + 1] -= 1;
-            }
-            number_[i] -= other.number_[i];
-        }
+        *this = BigInteger();
     } else {
-        for (size_t i = 0; i < blocks_; ++i) {
-            if (other.number_[i] < number_[i]) {
-                number_[i] -= 10000;
-                number_[i + 1] += 1;
+        size_t end = std::max(active_blocks_, other.active_blocks_);
+        size_t ind = 0;
+        if (!AbsLess(*this, other)) {
+            active_blocks_ = 0;
+            while (ind < end) {
+                if (number_[ind] < other.number_[ind]) {
+                    number_[ind] += 10000;
+                    number_[ind + 1] -= 1;
+                }
+                number_[ind] -= other.number_[ind];
+                if (number_[ind] != 0) {
+                    ++active_blocks_;
+                }
+                ++ind;
             }
-            number_[i] = other.number_[i] - number_[i];
+
+        } else {
+            active_blocks_ = 0;
+            while (ind < end) {
+                if (other.number_[ind] < number_[ind]) {
+                    number_[ind] -= 10000;
+                    number_[ind + 1] += 1;
+                }
+                number_[ind] = other.number_[ind] - number_[ind];
+                if (number_[ind] != 0) {
+                    ++active_blocks_;
+                }
+                ++ind;
+            }
+            negative_ = !(negative_);
         }
-        negative_ = !(negative_);
     }
 }
 
 template <size_t NDigits>
 BigInteger<NDigits>& BigInteger<NDigits>::operator+=(const BigInteger<NDigits>& other) {
     if (this == &other) {
-        this->Multiply(2);
+        Multiply(2);
     } else {
         if (negative_ == other.negative_) {
-            this->Add(other);
+            Add(other);
         } else {
-            this->Subtract(other);
+            Subtract(other);
         }
     }
     return *this;
@@ -327,15 +378,16 @@ BigInteger<NDigits>& BigInteger<NDigits>::operator+=(const BigInteger<NDigits>& 
 template <size_t NDigits>
 BigInteger<NDigits>& BigInteger<NDigits>::operator-=(const BigInteger<NDigits>& other) {
     if (this == &other) {
-        this->negative_ = false;
-        for (size_t i = 0; i < blocks_; ++i) {
-            this->number_[i] = 0;
+        negative_ = false;
+        for (size_t i = 0; i < active_blocks_; ++i) {
+            number_[i] = 0;
         }
+        active_blocks_ = 0;
     } else {
         if (negative_ == other.negative_) {
-            this->Subtract(other);
+            Subtract(other);
         } else {
-            this->Add(other);
+            Add(other);
         }
     }
     return *this;
@@ -344,7 +396,7 @@ BigInteger<NDigits>& BigInteger<NDigits>::operator-=(const BigInteger<NDigits>& 
 template <size_t NDigits>
 BigInteger<NDigits>& BigInteger<NDigits>::operator*=(const BigInteger<NDigits>& other) {
     BigInteger<NDigits> result;
-    for (size_t i = 0; i < blocks_; ++i) {
+    for (size_t i = 0; i < other.active_blocks_; ++i) {
         BigInteger<NDigits> summand(*this);
         summand.MultiplyByBlock(other.number_[i]);
         summand.TenTimes(i * 4);
@@ -353,7 +405,7 @@ BigInteger<NDigits>& BigInteger<NDigits>::operator*=(const BigInteger<NDigits>& 
         }
         result += summand;
     }
-    if (this->negative_ != other.negative_ && result.number_[0] != 0) {
+    if (this->negative_ != other.negative_ && result.active_blocks_ != 0) {
         result.negative_ = true;
     }
     *this = result;
@@ -363,28 +415,32 @@ BigInteger<NDigits>& BigInteger<NDigits>::operator*=(const BigInteger<NDigits>& 
 template <size_t NDigits>
 void BigInteger<NDigits>::TenTimes() {
     size_t ind = 0;
-    while (ind < blocks_ && number_[ind] == 0) {
-        ++ind;
-    }
-    if (ind == blocks_) {
+    if (active_blocks_ == 0) {
         return;
+    }
+    while (ind < active_blocks_ && number_[ind] == 0) {
+        ++ind;
     }
     size_t inc = number_[ind] / 1000;
     number_[ind] = (number_[ind] * 10) % 10000;
     ++ind;
-    while (ind < blocks_) {
+    while (ind < active_blocks_) {
         number_[ind] = number_[ind] * 10 + inc;
         if (number_[ind] > 9999) {
             inc = number_[ind] / 10000;
             number_[ind] %= 10000;
-            ++ind;
         } else {
             inc = 0;
-            ++ind;
         }
+        ++ind;
     }
     if (inc != 0) {
-        throw BigIntegerOverflow{};
+        if (ind < blocks_) {
+            ++active_blocks_;
+            number_[ind] = inc;
+        } else {
+            throw BigIntegerOverflow{};
+        }
     }
 }
 
@@ -399,14 +455,30 @@ void BigInteger<NDigits>::TenTimes(const size_t repeat) {
 
 template <size_t NDigits>
 void BigInteger<NDigits>::Multiply(const int digit) {
-    size_t inc = 0;
-    for (size_t i = 0; i < blocks_; ++i) {
-        int product = number_[i] * digit;
-        number_[i] = (product + inc) % 10000;
-        inc = (product + inc) / 10000;
-    }
-    if (inc != 0) {
-        throw BigIntegerOverflow{};
+    if (digit == 0) {
+        for (size_t i = 0; i < active_blocks_; ++i) {
+            number_[i] = 0;
+        }
+        active_blocks_ = 0;
+        negative_ = false;
+    } else {
+        size_t inc = 0;
+        size_t ind = 0;
+        while (ind < active_blocks_) {
+            int product = number_[ind] * digit;
+            number_[ind] = (product + inc) % 10000;
+            inc = (product + inc) / 10000;
+            ++ind;
+        }
+        active_blocks_ = ind;
+        if (inc != 0) {
+            if (ind < blocks_) {
+                number_[ind] = inc;
+                active_blocks_ = ind;
+            } else {
+                throw BigIntegerOverflow{};
+            }
+        }
     }
 }
 
@@ -441,14 +513,14 @@ BigInteger<NDigits>& BigInteger<NDigits>::operator--() {
 
 template <size_t NDigits>
 BigInteger<NDigits> BigInteger<NDigits>::operator++(int) {
-    auto old_value = *this;
+    BigInteger<NDigits> old_value(*this);
     *this += 1;
     return old_value;
 }
 
 template <size_t NDigits>
 BigInteger<NDigits> BigInteger<NDigits>::operator--(int) {
-    auto old_value = *this;
+    BigInteger<NDigits> old_value(*this);
     *this -= 1;
     return old_value;
 }
