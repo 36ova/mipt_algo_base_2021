@@ -20,7 +20,9 @@ public:
 template <size_t NDigits = 40000>
 class BigInteger {
 private:
-    const size_t blocks_ = NDigits / 4 + 1;
+    static const int kBlockMax = 10000;
+    static const size_t kBlockSize = 4;
+    size_t blocks_ = NDigits / 4 + 1;
     bool negative_ = false;
     int number_[NDigits / 4 + 1];
     size_t active_blocks_;
@@ -54,7 +56,7 @@ public:
         for (size_t i = 0; i < big_num.blocks_; ++i) {
             big_num.number_[i] = 0;
         }
-        const int max_string_size = 400;
+        const int max_string_size = NDigits;
         char str[max_string_size];
         is >> str;
         if (str[0] == '-') {
@@ -70,19 +72,13 @@ public:
         size_t counter = 0;
         while (ptr > end) {
             size_t block = 0;
-            --ptr;
-            block += int(*ptr - '0') * 1;
-            if (ptr > end) {
-                --ptr;
-                block += int(*ptr - '0') * 10;
-            }
-            if (ptr > end) {
-                --ptr;
-                block += int(*ptr - '0') * 100;
-            }
-            if (ptr > end) {
-                --ptr;
-                block += int(*ptr - '0') * 1000;
+            size_t koefficient = 1;
+            while (koefficient < big_num.kBlockMax) {
+                if (ptr > end) {
+                    --ptr;
+                    block += int(*ptr - '0') * koefficient;
+                }
+                koefficient *= 10;
             }
             big_num.number_[counter] = block;
             ++counter;
@@ -105,15 +101,16 @@ public:
         os << big_num.number_[ind];
         --ind;
         if (ind >= 0) {
-            for (; ind >= 0; --ind) {
-                if (big_num.number_[ind] / 10 == 0) {
-                    os << "000";
-                } else if (big_num.number_[ind] / 100 == 0) {
-                    os << "00";
-                } else if (big_num.number_[ind] / 1000 == 0) {
-                    os << "0";
+            while (ind >= 0) {
+                size_t koefficient = 10;
+                while (koefficient < big_num.kBlockMax) {
+                    if (big_num.number_[ind] / koefficient == 0) {
+                        os << "0";
+                    }
+                    koefficient *= 10;
                 }
                 os << big_num.number_[ind];
+                --ind;
             }
         }
         return os;
@@ -177,12 +174,12 @@ BigInteger<NDigits>::BigInteger(int num) : negative_(false) {
     }
     size_t counter = 0;
     while (num != 0) {
-        int block = num % 10000;
+        int block = num % kBlockMax;
         if (counter >= blocks_) {
             throw BigIntegerOverflow{};
         }
         this->number_[counter] = block;
-        num /= 10000;
+        num /= kBlockMax;
         ++counter;
     }
     active_blocks_ = counter;
@@ -199,12 +196,12 @@ BigInteger<NDigits>::BigInteger(int64_t num) : negative_(false) {
     }
     size_t counter = 0;
     while (num != 0) {
-        int block = static_cast<int>(num % 10000);
+        int block = static_cast<int>(num % kBlockMax);
         if (counter >= blocks_) {
             throw BigIntegerOverflow{};
         }
         this->number_[counter] = block;
-        num /= 10000;
+        num /= kBlockMax;
         ++counter;
     }
     active_blocks_ = counter;
@@ -228,21 +225,15 @@ BigInteger<NDigits>::BigInteger(const char* str) : negative_(false) {
     size_t counter = 0;
     while (ptr > end) {
         size_t block = 0;
-        --ptr;
-        block += int(*ptr - '0') * 1;
-        if (ptr > end) {
-            --ptr;
-            block += int(*ptr - '0') * 10;
+        size_t koefficient = 1;
+        while (koefficient < kBlockMax) {
+            if (ptr > end) {
+                --ptr;
+                block += int(*ptr - '0') * koefficient;
+            }
+            koefficient *= 10;
         }
-        if (ptr > end) {
-            --ptr;
-            block += int(*ptr - '0') * 100;
-        }
-        if (ptr > end) {
-            --ptr;
-            block += int(*ptr - '0') * 1000;
-        }
-        this->number_[counter] = block;
+        number_[counter] = block;
         ++counter;
     }
     active_blocks_ = counter;
@@ -299,8 +290,8 @@ void BigInteger<NDigits>::Add(const BigInteger<NDigits>& other) {
     size_t ind = 0;
     while (ind < end) {
         int sum = number_[ind] + other.number_[ind];
-        number_[ind] = (sum + inc) % 10000;
-        inc = (sum + inc) / 10000;
+        number_[ind] = (sum + inc) % kBlockMax;
+        inc = (sum + inc) / kBlockMax;
         ++ind;
     }
     active_blocks_ = ind;
@@ -325,7 +316,7 @@ void BigInteger<NDigits>::Subtract(const BigInteger<NDigits>& other) {
             active_blocks_ = 0;
             while (ind < end) {
                 if (number_[ind] < other.number_[ind]) {
-                    number_[ind] += 10000;
+                    number_[ind] += kBlockMax;
                     number_[ind + 1] -= 1;
                 }
                 number_[ind] -= other.number_[ind];
@@ -339,7 +330,7 @@ void BigInteger<NDigits>::Subtract(const BigInteger<NDigits>& other) {
             active_blocks_ = 0;
             while (ind < end) {
                 if (other.number_[ind] < number_[ind]) {
-                    number_[ind] -= 10000;
+                    number_[ind] -= kBlockMax;
                     number_[ind + 1] += 1;
                 }
                 number_[ind] = other.number_[ind] - number_[ind];
@@ -413,14 +404,14 @@ void BigInteger<NDigits>::TenTimes() {
     while (ind < active_blocks_ && number_[ind] == 0) {
         ++ind;
     }
-    size_t inc = number_[ind] / 1000;
-    number_[ind] = (number_[ind] * 10) % 10000;
+    size_t inc = number_[ind] / (kBlockMax / 10);
+    number_[ind] = (number_[ind] * 10) % kBlockMax;
     ++ind;
     while (ind < active_blocks_) {
         number_[ind] = number_[ind] * 10 + inc;
-        if (number_[ind] > 9999) {
-            inc = number_[ind] / 10000;
-            number_[ind] %= 10000;
+        if (number_[ind] > (kBlockMax - 1)) {
+            inc = number_[ind] / kBlockMax;
+            number_[ind] %= kBlockMax;
         } else {
             inc = 0;
         }
@@ -458,8 +449,8 @@ void BigInteger<NDigits>::Multiply(const int digit) {
         size_t ind = 0;
         while (ind < active_blocks_) {
             int product = number_[ind] * digit;
-            number_[ind] = (product + inc) % 10000;
-            inc = (product + inc) / 10000;
+            number_[ind] = (product + inc) % kBlockMax;
+            inc = (product + inc) / kBlockMax;
             ++ind;
         }
         active_blocks_ = ind;
@@ -476,13 +467,13 @@ void BigInteger<NDigits>::Multiply(const int digit) {
 
 template <size_t NDigits>
 void BigInteger<NDigits>::MultiplyByBlock(size_t block) {
-    size_t digits[4];
-    for (size_t i = 0; i < 4; ++i) {
+    size_t digits[kBlockSize];
+    for (size_t i = 0; i < kBlockSize; ++i) {
         digits[i] = block % 10;
         block /= 10;
     }
     BigInteger<NDigits> result;
-    for (size_t i = 0; i < 4; ++i) {
+    for (size_t i = 0; i < kBlockSize; ++i) {
         BigInteger<NDigits> summand(*this);
         summand.Multiply(digits[i]);
         summand.TenTimes(i);
