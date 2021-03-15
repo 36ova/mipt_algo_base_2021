@@ -36,5 +36,5 @@ before_script:
 test:
         stage: test
         script:
-                - ls
+                - cd public_tests
                 - timeout -s SIGKILL 2m ./test_solution.sh $CI_COMMIT_BRANCH
