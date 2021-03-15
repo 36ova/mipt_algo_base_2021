@@ -6,7 +6,21 @@ image: kunitoki/clang-10
 stages:
         - test
 before_script:
-        - apt-get update -y
+        - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
+        - eval $(ssh-agent -s)
+        - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+        - mkdir -p ~/.ssh
+        - chmod 700 ~/.ssh
+        - git config --global user.email "darth@empire.com"
+        - git config --global user.name "Darth Vader"
+        - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
+        - chmod 644 ~/.ssh/known_hosts
+        - ssh -T git@gitlab.com
+        - git clone git@gitlab.com:VladimirVolodya/attempts.git 
+        - cd attempts
+        - ./check_user.sh $GITLAB_USER_LOGIN
+        - ./check_attempt.sh $CI_PROJECT_DIR $CI_COMMIT_BRANCH
+        - cd ..
         - apt-get install -y gcc
         - apt-get install -y clang-format
         - apt-get install -y clang-tidy
@@ -18,16 +32,9 @@ before_script:
         - make
         - cp libgtest* /usr/lib
         - cd ..
-        - git submodule update --remote
-
+        - git submodule update --remote --merge
 test:
         stage: test
         script:
-                - cd public_tests
-                - ./test_solution.sh $CI_COMMIT_BRANCH
-                - cd ..
-                - git clone  https://$TESTER:$TESTING_TOKEN@gitlab.com/VladimirVolodya/secret_tests.git
-
-                - cd secret_tests
-                - ./test_solution.sh $CI_COMMIT_BRANCH
-
+                - ls
+                - timeout -s SIGKILL 2m ./test_solution.sh $CI_COMMIT_BRANCH
