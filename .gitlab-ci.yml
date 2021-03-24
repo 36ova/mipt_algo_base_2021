@@ -18,7 +18,6 @@ before_script:
         - ssh -T git@gitlab.com
         - git clone git@gitlab.com:VladimirVolodya/attempts.git 
         - cd attempts
-        - ./check_user.sh $GITLAB_USER_LOGIN
         - ./check_attempt.sh $CI_PROJECT_DIR $CI_COMMIT_BRANCH
         - cd ..
         - apt-get install -y gcc
@@ -36,5 +35,5 @@ before_script:
 test:
         stage: test
         script:
-                - cd public_tests
-                - timeout -s SIGKILL 2m ./test_solution.sh $CI_COMMIT_BRANCH
+                - cd attempts
+                - ./check_solution.sh $CI_PROJECT_DIR $CI_COMMIT_BRANCH
