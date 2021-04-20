@@ -10,14 +10,16 @@ public:
     UniquePtr();
     explicit UniquePtr(T* ptr);
     UniquePtr(const UniquePtr<T>& other) = delete;
-    UniquePtr<T>& operator=(const UniquePtr<T>& other) = delete;
     UniquePtr(UniquePtr<T>&& other) noexcept;
+    UniquePtr<T>& operator=(const UniquePtr<T>& other) = delete;
     UniquePtr<T>& operator=(UniquePtr<T>&& other) noexcept;
     ~UniquePtr();
+
     T* Release();
     void Reset(T* ptr = nullptr);
     void Swap(UniquePtr<T>& other);
     T* Get() const;
+
     T& operator*() const;
     T* operator->() const;
     explicit operator bool() const;
