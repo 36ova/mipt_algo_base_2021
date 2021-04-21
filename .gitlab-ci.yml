@@ -6,20 +6,7 @@ image: kunitoki/clang-10
 stages:
         - test
 before_script:
-        - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
-        - eval $(ssh-agent -s)
-        - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-        - mkdir -p ~/.ssh
-        - chmod 700 ~/.ssh
-        - git config --global user.email "darth@empire.com"
-        - git config --global user.name "Darth Vader"
-        - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
-        - chmod 644 ~/.ssh/known_hosts
-        - ssh -T git@gitlab.com
-        - git clone git@gitlab.com:VladimirVolodya/attempts.git 
-        - cd attempts
-        - ./check_attempt.sh $CI_PROJECT_DIR $CI_COMMIT_BRANCH
-        - cd ..
+        - apt-get update -y
         - apt-get install -y gcc
         - apt-get install -y clang-format
         - apt-get install -y clang-tidy
@@ -35,5 +22,5 @@ before_script:
 test:
         stage: test
         script:
-                - cd attempts
-                - ./check_solution.sh $CI_PROJECT_DIR $CI_COMMIT_BRANCH
+                - cd public_tests
+                - timeout -s SIGKILL 2m ./test_solution.sh $CI_COMMIT_BRANCH
