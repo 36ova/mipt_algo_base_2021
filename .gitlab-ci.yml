@@ -23,4 +23,4 @@ test:
         stage: test
         script:
                 - cd public_tests
-                - timeout -s SIGKILL 2m ./test_solution.sh $CI_COMMIT_BRANCH
+                - ./test_solution.sh $CI_COMMIT_BRANCH
